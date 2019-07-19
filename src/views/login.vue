@@ -43,7 +43,8 @@ export default {
             .then(res => {
               console.log(res)
               if (res.data.meta.status === 200) {
-                // 进行跳转
+                // 进行路由跳转
+                this.$router.push({ name: 'home' })
               } else {
                 this.$message({
                   message: res.data.meta.msg,
