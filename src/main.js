@@ -11,7 +11,7 @@ import router from '@/router/index.js'
 
 // 添加导航守卫
 router.beforeEach((to, from, next) => {
-  console.log(to)
+  // console.log(to)
   // 判断用户是否登陆过或者是否跳转到login页,如果是则继续
   var token = localStorage.getItem('itcast_manage_34_token')
   if (token || to.path === '/login') {
