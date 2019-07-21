@@ -1,9 +1,10 @@
 <template>
   <div class="home">
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="auto">
         <div class="logo"></div>
         <el-menu
+          :collapse='iscollapse'
           :router='true'
           :unique-opened='true'
           :default-active="'1-3'"
@@ -47,19 +48,35 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>Header</el-header>
-        <el-main>Main</el-main>
+        <el-header>
+            <span class="myicon myicon-menu toggle-btn" @click="iscollapse = !iscollapse"></span>
+            <span class="system-title">电商后台管理系统</span>
+            <a href="javascrpt:;" class="welcome">退出</a>
+        </el-header>
+        <el-main>
+            <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 <script>
-export default {}
+export default {
+  data () {
+    return {
+      iscollapse: false
+    }
+  }
+}
 </script>
 <style lang="less" scoped>
 .home {
   height: 100%;
-  .el-menu-admin:not(.el-menu--collapse) {
+  .el-menu {
+      width: auto;
+  }
+  // 如果是展开状态,那么宽度就是200px,如果是合并状态,宽度:auto
+  .el-menu:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
   }
