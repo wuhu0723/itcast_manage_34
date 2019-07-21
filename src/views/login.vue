@@ -43,6 +43,8 @@ export default {
             .then(res => {
               console.log(res)
               if (res.data.meta.status === 200) {
+                // 路由跳转之后先保存token数据到本地存储
+                localStorage.setItem('itcast_manage_34_token', res.data.data.token)
                 // 进行路由跳转
                 this.$router.push({ name: 'home' })
               } else {
@@ -68,7 +70,6 @@ export default {
           return false
         }
       })
-      // 发起请求
     }
   }
 }
