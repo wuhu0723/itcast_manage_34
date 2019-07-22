@@ -39,7 +39,7 @@
             <el-button type="primary" icon="el-icon-d-caret"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
-            <el-button type="primary" icon="el-icon-delete"></el-button>
+            <el-button type="primary" icon="el-icon-delete" @click='del(scope.row.id)'></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -97,7 +97,7 @@
   </div>
 </template>
 <script>
-import { getAllUserList, addUser, editUser } from '@/api/user_index.js'
+import { getAllUserList, addUser, editUser, delUserById } from '@/api/user_index.js'
 export default {
   data () {
     return {
@@ -148,6 +148,44 @@ export default {
     }
   },
   methods: {
+    // 根据id删除指定用户
+    del (id) {
+      // 弹出删除确认框
+      this.$confirm(`此操作将永久删除id号为${id}的用户, 是否继续?`, '删除提示', {
+        confirmButtonText: '确定', // 指定按钮文本
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => { // 如果单击的确认就执行then中的操作
+        delUserById(id)
+          .then(res2 => {
+            if (res2.data.meta.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '删除成功'
+              })
+              // 如果代码到了这一步，说明这条记录已经删除了，只是还没有刷新
+              //  this.userobj.pagenum:2
+              // this.total :6
+              // 6-1 = 5 / 4 = 2
+              // if (Math.ceil((this.total - 1) / this.userobj.pagesize) < this.userobj.pagenum) {
+              //   this.userobj.pagenum--
+              // } else if (Math.ceil((this.total - 1) / this.userobj.pagesize) === 0) {
+              //   this.userobj.pagenum = 1
+              // }
+              this.userobj.pagenum = Math.ceil((this.total - 1) / this.userobj.pagesize) ? --this.userobj.pagenum : this.userobj.pagenum
+              this.init()
+            }
+          })
+          .catch(err2 => {
+            console.log(err2)
+          })
+      }).catch(() => { // 如果单击了取消就执行catch中的操作
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     // 编辑提交
     async editsubmit () {
       // await：必须写在async函数内
