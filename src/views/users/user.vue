@@ -13,8 +13,9 @@
         v-model="userobj.query"
         class="input-with-select"
         style="width:300px;margin-right:10px"
+        @keyup.enter.native='init'
       >
-        <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click='init'></el-button>
       </el-input>
       <el-button type="success" plain>添加用户</el-button>
     </div>
@@ -43,6 +44,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页区域 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="userobj.pagenum"
+      :page-sizes="[1, 2, 3, 4]"
+      :page-size="userobj.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </div>
 </template>
 <script>
@@ -50,29 +61,54 @@ import { getAllUserList } from '@/api/user_index.js'
 export default {
   data () {
     return {
+      // 总记录数
+      total: 0,
       value2: true,
       // 用户搜索关键字
       userobj: {
         query: '',
         pagenum: 1,
-        pagesize: 10
+        pagesize: 1
       },
       //   表格数据源,它是一个数组,里面的每个元素都是一个对象
       userList: []
     }
   },
-  methods: {},
+  methods: {
+    // 切换每页显示数量时触发
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      // 修改全局pagesize
+      this.userobj.pagesize = val
+      // 重新获取数据
+      this.init()
+    },
+    // 切换当前页码时触发
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      // 修改全局的pagenum
+      this.userobj.pagenum = val
+      // 重新获取数据
+      this.init()
+    },
+    // 数据初始化
+    init () {
+      getAllUserList(this.userobj)
+        .then(res => {
+          console.log(res)
+          if (res.data.meta.status === 200) {
+            this.userList = res.data.data.users
+            // 获取总记录数
+            this.total = res.data.data.total
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  },
   mounted () {
-    getAllUserList(this.userobj)
-      .then(res => {
-        console.log(res)
-        if (res.data.meta.status === 200) {
-          this.userList = res.data.data.users
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    this.init()
   }
 }
 </script>
