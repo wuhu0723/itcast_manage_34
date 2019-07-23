@@ -24,7 +24,7 @@
                   <el-tag closable type="info">{{second.authName}}</el-tag>
                 </el-col>
                 <el-col :span='20'>
-                  <el-tag closable type="warning" v-for='third in second.children' :key='third.id'  style="margin:0px 10px 5px 0px">{{third.authName}}</el-tag>
+                  <el-tag closable type="warning" v-for='third in second.children' :key='third.id'  style="margin:0px 10px 5px 0px" @close='delRightById(scope.row.id,third.id)'>{{third.authName}}</el-tag>
                 </el-col>
               </el-row>
             </el-col>
@@ -54,7 +54,7 @@
   </div>
 </template>
 <script>
-import { getAllRolelist } from '@/api/role_index.js'
+import { getAllRolelist, delRightByRoleId } from '@/api/role_index.js'
 export default {
   data () {
     return {
@@ -62,6 +62,20 @@ export default {
     }
   },
   methods: {
+    // 删除指定角色的指定权限
+    // roleId:角色id
+    // rightId:权限id
+    async delRightById (roleId, rightId) {
+      let res = await delRightByRoleId(roleId, rightId)
+      console.log(res)
+      if (res.data.meta.status === 200) {
+        this.$message({
+          type: 'success',
+          message: res.data.meta.msg
+        })
+        this.roleInit()
+      }
+    },
     // 角色数据的初始化
     async roleInit () {
       let res = await getAllRolelist()
