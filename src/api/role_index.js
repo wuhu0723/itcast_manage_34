@@ -16,3 +16,21 @@ export const delRightByRoleId = (roleId, rightId) => {
     method: 'delete'
   })
 }
+
+// 为角色分配权限
+export const grantRightById = (roleId, rids) => {
+  return axios({
+    url: `roles/${roleId}/rights`,
+    method: 'post',
+    data: { rids }
+  })
+}
+
+// 添加角色
+export const addRole = (data) => {
+  return axios({
+    url: `roles`,
+    method: 'post',
+    data
+  })
+}
