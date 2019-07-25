@@ -16,15 +16,15 @@
           <!-- 准备进行嵌套循环生成展开行数据展示结构 -->
           <el-row v-for="first in scope.row.children" :key="first.id" style="margin-bottom:10px;border-bottom:1px dashed #ccc">
             <el-col :span="4">
-              <el-tag closable type="success">{{first.authName}}</el-tag>
+              <el-tag closable type="success"  @close='delRightById(scope.row,first.id)'>{{first.authName}}</el-tag>
             </el-col>
             <el-col :span="20">
               <el-row v-for='second in first.children' :key='second.id'  style="margin-bottom:10px">
                 <el-col :span='4'>
-                  <el-tag closable type="info">{{second.authName}}</el-tag>
+                  <el-tag closable type="info"  @close='delRightById(scope.row,second.id)'>{{second.authName}}</el-tag>
                 </el-col>
                 <el-col :span='20'>
-                  <el-tag closable type="warning" v-for='third in second.children' :key='third.id'  style="margin:0px 10px 5px 0px" @close='delRightById(scope.row.id,third.id)'>{{third.authName}}</el-tag>
+                  <el-tag closable type="warning" v-for='third in second.children' :key='third.id'  style="margin:0px 10px 5px 0px" @close='delRightById(scope.row,third.id)'>{{third.authName}}</el-tag>
                 </el-col>
               </el-row>
             </el-col>
@@ -65,15 +65,17 @@ export default {
     // 删除指定角色的指定权限
     // roleId:角色id
     // rightId:权限id
-    async delRightById (roleId, rightId) {
-      let res = await delRightByRoleId(roleId, rightId)
-      console.log(res)
+    async delRightById (row, rightId) {
+      let res = await delRightByRoleId(row.id, rightId)
       if (res.data.meta.status === 200) {
         this.$message({
           type: 'success',
           message: res.data.meta.msg
         })
-        this.roleInit()
+        console.log(res)
+        // this.roleInit()
+        // 我只想刷新当前展开行数据对象
+        row.children = res.data.data
       }
     },
     // 角色数据的初始化
