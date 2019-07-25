@@ -14,23 +14,42 @@
       <el-table-column type="expand">
         <template slot-scope="scope">
           <!-- 准备进行嵌套循环生成展开行数据展示结构 -->
-          <el-row v-for="first in scope.row.children" :key="first.id" style="margin-bottom:10px;border-bottom:1px dashed #ccc">
+          <el-row
+            v-for="first in scope.row.children"
+            :key="first.id"
+            style="margin-bottom:10px;border-bottom:1px dashed #ccc"
+          >
             <el-col :span="4">
-              <el-tag closable type="success"  @close='delRightById(scope.row,first.id)'>{{first.authName}}</el-tag>
+              <el-tag
+                closable
+                type="success"
+                @close="delRightById(scope.row,first.id)"
+              >{{first.authName}}</el-tag>
             </el-col>
             <el-col :span="20">
-              <el-row v-for='second in first.children' :key='second.id'  style="margin-bottom:10px">
-                <el-col :span='4'>
-                  <el-tag closable type="info"  @close='delRightById(scope.row,second.id)'>{{second.authName}}</el-tag>
+              <el-row v-for="second in first.children" :key="second.id" style="margin-bottom:10px">
+                <el-col :span="4">
+                  <el-tag
+                    closable
+                    type="info"
+                    @close="delRightById(scope.row,second.id)"
+                  >{{second.authName}}</el-tag>
                 </el-col>
-                <el-col :span='20'>
-                  <el-tag closable type="warning" v-for='third in second.children' :key='third.id'  style="margin:0px 10px 5px 0px" @close='delRightById(scope.row,third.id)'>{{third.authName}}</el-tag>
+                <el-col :span="20">
+                  <el-tag
+                    closable
+                    type="warning"
+                    v-for="third in second.children"
+                    :key="third.id"
+                    style="margin:0px 10px 5px 0px"
+                    @close="delRightById(scope.row,third.id)"
+                  >{{third.authName}}</el-tag>
                 </el-col>
               </el-row>
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span='24' v-show='scope.row.children.length == 0'>没有任何的权限，请先分配！！</el-col>
+            <el-col :span="24" v-show="scope.row.children.length == 0">没有任何的权限，请先分配！！</el-col>
           </el-row>
         </template>
       </el-table-column>
@@ -43,7 +62,7 @@
             <el-button type="primary" icon="el-icon-edit"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="角色授权" placement="top">
-            <el-button type="primary" icon="el-icon-d-caret"></el-button>
+            <el-button type="primary" icon="el-icon-d-caret" @click="showGrantDialog"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
             <el-button type="primary" icon="el-icon-delete"></el-button>
@@ -51,17 +70,48 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 添加角色授权对话框 -->
+    <el-dialog title="角色授权" :visible.sync="grantdialogFormVisible">
+      <el-tree
+        :data="rightList"
+        show-checkbox
+        node-key="id"
+        :default-expand-all='true'
+        :default-checked-keys="checkedArr"
+        :props="defaultProps"
+      ></el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="grantdialogFormVisible = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { getAllRolelist, delRightByRoleId } from '@/api/role_index.js'
+import { getAllRightList } from '@/api/right_index.js'
 export default {
   data () {
     return {
-      roleList: []
+      grantdialogFormVisible: false,
+      checkedArr: [],
+      roleList: [],
+      rightList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      }
     }
   },
   methods: {
+    // 打开授权角色对话框：
+    async showGrantDialog () {
+      this.grantdialogFormVisible = true
+      // 进行所有权限数据的获取
+      let res = await getAllRightList('tree')
+      console.log(res)
+      this.rightList = res.data.data
+    },
     // 删除指定角色的指定权限
     // roleId:角色id
     // rightId:权限id
@@ -72,7 +122,7 @@ export default {
           type: 'success',
           message: res.data.meta.msg
         })
-        console.log(res)
+        // console.log(res)
         // this.roleInit()
         // 我只想刷新当前展开行数据对象
         row.children = res.data.data
@@ -82,7 +132,7 @@ export default {
     async roleInit () {
       let res = await getAllRolelist()
       this.roleList = res.data.data
-      console.log(res)
+      // console.log(res)
     }
   },
   mounted () {
