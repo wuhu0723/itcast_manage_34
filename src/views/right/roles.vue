@@ -62,7 +62,7 @@
             <el-button type="primary" icon="el-icon-edit"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="角色授权" placement="top">
-            <el-button type="primary" icon="el-icon-d-caret" @click="showGrantDialog"></el-button>
+            <el-button type="primary" icon="el-icon-d-caret" @click="showGrantDialog(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="删除" placement="top">
             <el-button type="primary" icon="el-icon-delete"></el-button>
@@ -105,12 +105,29 @@ export default {
   },
   methods: {
     // 打开授权角色对话框：
-    async showGrantDialog () {
+    async showGrantDialog (row) {
       this.grantdialogFormVisible = true
       // 进行所有权限数据的获取
       let res = await getAllRightList('tree')
-      console.log(res)
+      console.log(row)
       this.rightList = res.data.data
+      // 获取当前角色的权限id
+      // 先清空之前的数组中的存储的id
+      this.checkedArr.length = 0
+      if (row.children && row.children.length > 0) {
+        row.children.forEach(first => {
+          if (first.children && first.children.length > 0) {
+            first.children.forEach(second => {
+              if (second.children && second.children.length > 0) {
+                second.children.forEach(third => {
+                  // 添加id到数组
+                  this.checkedArr.push(third.id)
+                })
+              }
+            })
+          }
+        })
+      }
     },
     // 删除指定角色的指定权限
     // roleId:角色id
