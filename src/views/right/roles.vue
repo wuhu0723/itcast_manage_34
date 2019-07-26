@@ -189,7 +189,6 @@ export default {
       this.roleId = row.id
       // 进行所有权限数据的获取
       let res = await getAllRightList('tree')
-      console.log(row)
       this.rightList = res.data.data
       // 获取当前角色的权限id
       // 先清空之前的数组中的存储的id
@@ -234,6 +233,9 @@ export default {
   },
   mounted () {
     this.roleInit()
+    // getAllRightList('tree').then(res => {
+    //   this.rightList = res.data.data
+    // })
   }
 }
 </script>
