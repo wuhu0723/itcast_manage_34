@@ -12,6 +12,7 @@ import Rights from '@/views/right/rights.vue'
 import Goods from '@/views/goods/goods.vue'
 import List from '@/views/goods/list.vue'
 import Add from '@/views/goods/add.vue'
+import Reports from '@/views/reports.vue'
 // 使用
 Vue.use(VueRouter)
 // 创建路由对象
@@ -78,6 +79,11 @@ var router = new VueRouter({
               component: Add
             }
           ]
+        },
+        {
+          name: 'reports',
+          path: 'reports',
+          component: Reports
         }
       ]
     }
